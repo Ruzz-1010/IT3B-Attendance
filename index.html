@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>IT3B Attendance System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 30px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .logo i {
+            font-size: 40px;
+            color: #667eea;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Admin Toggle Button - ALWAYS VISIBLE */
+        .admin-toggle-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f0f0f0;
+            border: none;
+            color: #667eea;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .admin-toggle-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: rotate(15deg);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group label i {
+            margin-right: 8px;
+            color: #667eea;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Info Section */
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item i {
+            font-size: 24px;
+            color: #667eea;
+        }
+
+        .info-item strong {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Camera Section */
+        .camera-section {
+            margin-bottom: 20px;
+        }
+
+        .camera-section label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .camera-container {
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            text-align: center;
+            position: relative;
+        }
+
+        #video {
+            width: 100%;
+            height: auto;
+            background: #000;
+            border-radius: 15px;
+        }
+
+        .capture-btn, .retake-btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            margin-top: 10px;
+            border-radius: 10px;
+        }
+
+        .capture-btn:hover, .retake-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .photo-preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .photo-preview img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* Buttons */
+        .submit-btn, .login-btn, .save-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled), .login-btn:hover, .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* Alert */
+        .status-alert {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: shake 0.5s ease;
+        }
+
+        .status-alert.success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+
+        .info-footer {
+            margin-top: 20px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        /* Admin Dashboard Styles */
+        .admin-dashboard {
+            background: white;
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .map-container {
+            height: 300px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .records-table {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .photo-thumb {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .card, .admin-dashboard {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Student View -->
+        <div id="studentView">
+            <div class="card">
+                <button class="admin-toggle-btn" onclick="showAdminLogin()">
+                    <i class="fas fa-user-shield"></i>
+                </button>
+                
+                <div class="header">
+                    <div class="logo">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h1>IT3B Attendance</h1>
+                    </div>
+                    <p class="subtitle">Secure Location-Based Verification</p>
+                </div>
+
+                <div id="statusAlert" class="status-alert" style="display: none;">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="alertMessage"></span>
+                </div>
+
+                <form id="attendanceForm">
+                    <div class="form-group">
+                        <label for="studentId">
+                            <i class="fas fa-id-card"></i>
+                            STUDENT ID
+                        </label>
+                        <input type="text" id="studentId" required placeholder="Enter your student ID">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="studentName">
+                            <i class="fas fa-user"></i>
+                            FULL NAME
+                        </label>
+                        <input type="text" id="studentName" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="info-section">
+                        <div class="info-item" id="locationStatus">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>LOCATION</strong>
+                                <span class="info-value">Checking...</span>
+                            </div>
+                        </div>
+                        <div class="info-item" id="timeStatus">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>TIME WINDOW</strong>
+                                <span class="info-value">Checking...</span>
+                            </div>
+                        </div>
+                        <div class="info-item" id="attendanceStatus">
+                            <i class="fas fa-calendar-check"></i>
+                            <div>
+                                <strong>TODAY'S STATUS</strong>
+                                <span class="info-value">Ready</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="camera-section">
+                        <label>
+                            <i class="fas fa-camera"></i>
+                            PHOTO VERIFICATION
+                        </label>
+                        <div class="camera-container">
+                            <video id="video" autoplay playsinline></video>
+                            <canvas id="canvas" style="display: none;"></canvas>
+                            <button type="button" id="captureBtn" class="capture-btn">
+                                <i class="fas fa-camera-retro"></i> Capture Photo
+                            </button>
+                        </div>
+                        <div id="photoPreview" class="photo-preview" style="display: none;">
+                            <img id="capturedPhoto" alt="Captured photo">
+                            <button type="button" id="retakeBtn" class="retake-btn">
+                                <i class="fas fa-redo-alt"></i> Retake
+                            </button>
+                        </div>
+                        <input type="hidden" id="photoData">
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="submit-btn" disabled>
+                        <i class="fas fa-check-circle"></i> Submit Attendance
+                    </button>
+                </form>
+
+                <div class="info-footer">
+                    <i class="fas fa-shield-alt"></i>
+                    <p>Secured with GPS, Time & Photo Verification</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Login View -->
+        <div id="adminLoginView" style="display: none;">
+            <div class="card">
+                <button class="admin-toggle-btn" onclick="showStudentView()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                
+                <div class="header">
+                    <div class="logo">
+                        <i class="fas fa-user-shield"></i>
+                        <h1>Admin Login</h1>
+                    </div>
+                    <p class="subtitle">Access Administrator Dashboard</p>
+                </div>
+
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Username</label>
+                        <input type="text" id="adminUsername" required placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="adminPassword" required placeholder="Enter password">
+                    </div>
+                    <button type="submit" class="submit-btn">Login to Dashboard</button>
+                </form>
+                
+                <div class="info-footer">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Default: admin / admin123</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard View -->
+        <div id="adminDashboardView" style="display: none;">
+            <div class="admin-dashboard">
+                <div class="admin-header">
+                    <div class="logo" style="margin: 0;">
+                        <i class="fas fa-chalkboard-user"></i>
+                        <h2 style="font-size: 20px;">Admin Dashboard</h2>
+                    </div>
+                    <button onclick="logoutAdmin()" class="logout-btn" style="width: auto; padding: 8px 15px; margin: 0;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+
+                <!-- Statistics -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-user-check"></i>
+                        <h3 id="statPresent">0</h3>
+                        <p>Present</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <h3 id="statLate">0</h3>
+                        <p>Late</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-user-times"></i>
+                        <h3 id="statAbsent">0</h3>
+                        <p>Absent</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3 id="statTotal">0</h3>
+                        <p>Total Today</p>
+                    </div>
+                </div>
+
+                <!-- Location Settings -->
+                <div style="margin-bottom: 20px;">
+                    <h3><i class="fas fa-map-pin"></i> Location Settings</h3>
+                    <div id="adminMap" class="map-container"></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <input type="number" id="adminRadius" placeholder="Radius (meters)" value="100">
+                        <button onclick="saveLocation()" class="save-btn" style="margin: 0;">Save Location</button>
+                    </div>
+                    <button onclick="pinCurrentLocation()" class="capture-btn" style="margin-top: 10px;">
+                        <i class="fas fa-crosshairs"></i> Pin My Current Location
+                    </button>
+                </div>
+
+                <!-- Time Settings -->
+                <div style="margin-bottom: 20px;">
+                    <h3><i class="fas fa-clock"></i> Time Settings</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label>Time In Start</label>
+                            <input type="time" id="timeInStart">
+                        </div>
+                        <div>
+                            <label>Time In End</label>
+                            <input type="time" id="timeInEnd">
+                        </div>
+                        <div>
+                            <label>Time Out Start</label>
+                            <input type="time" id="timeOutStart">
+                        </div>
+                        <div>
+                            <label>Time Out End</label>
+                            <input type="time" id="timeOutEnd">
+                        </div>
+                    </div>
+                    <button onclick="saveTimeSettings()" class="save-btn" style="margin-top: 10px;">Save Time Settings</button>
+                </div>
+
+                <!-- Attendance Records -->
+                <div>
+                    <h3><i class="fas fa-table"></i> Attendance Records</h3>
+                    <div style="display: flex; gap: 10px; margin: 10px 0;">
+                        <input type="date" id="filterDate" style="flex: 1;">
+                        <input type="text" id="searchStudent" placeholder="Search..." style="flex: 2;">
+                        <button onclick="exportReport()" class="capture-btn" style="width: auto; margin: 0;">Export</button>
+                    </div>
+                    <div class="records-table">
+                        <table id="attendanceTable">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Photo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody">
+                                <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Photo View -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalPhoto" src="">
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Global Variables
+        let currentLocation = null;
+        let isWithinLocation = false;
+        let isWithinTime = false;
+        let currentPhoto = null;
+        let stream = null;
+        let adminMap = null;
+        let adminMarker = null;
+        let adminCircle = null;
+
+        // ============ VIEW SWITCHING ============
+        function showAdminLogin() {
+            document.getElementById('studentView').style.display = 'none';
+            document.getElementById('adminLoginView').style.display = 'block';
+            document.getElementById('adminDashboardView').style.display = 'none';
+        }
+
+        function showStudentView() {
+            document.getElementById('studentView').style.display = 'block';
+            document.getElementById('adminLoginView').style.display = 'none';
+            document.getElementById('adminDashboardView').style.display = 'none';
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('studentView').style.display = 'none';
+            document.getElementById('adminLoginView').style.display = 'none';
+            document.getElementById('adminDashboardView').style.display = 'block';
+            loadAdminDashboard();
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('adminLoggedIn');
+            showStudentView();
+            showAlert('Logged out successfully', 'success');
+        }
+
+        // ============ ALERT FUNCTION ============
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('statusAlert');
+            const alertMessage = document.getElementById('alertMessage');
+            alertMessage.textContent = message;
+            alertDiv.style.display = 'flex';
+            alertDiv.className = 'status-alert';
+            if (type === 'success') {
+                alertDiv.classList.add('success');
+            }
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // ============ CAMERA FUNCTIONS ============
+        async function initCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } 
+                });
+                document.getElementById('video').srcObject = stream;
+            } catch (err) {
+                console.error('Camera error:', err);
+                showAlert('Unable to access camera. Please grant permission.', 'error');
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            currentPhoto = canvas.toDataURL('image/jpeg', 0.7);
+            document.getElementById('capturedPhoto').src = currentPhoto;
+            document.getElementById('photoData').value = currentPhoto;
+            
+            document.getElementById('video').style.display = 'none';
+            document.getElementById('photoPreview').style.display = 'block';
+            document.getElementById('captureBtn').style.display = 'none';
+            
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            updateSubmitButton();
+        }
+
+        function retakePhoto() {
+            document.getElementById('video').style.display = 'block';
+            document.getElementById('photoPreview').style.display = 'none';
+            document.getElementById('captureBtn').style.display = 'block';
+            currentPhoto = null;
+            initCamera();
+            updateSubmitButton();
+        }
+
+        // ============ LOCATION FUNCTIONS ============
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            if (!lat2 || !lon2) return Infinity;
+            const R = 6371e3;
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180;
+            const Δλ = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        async function checkLocation() {
+            if (!navigator.geolocation) {
+                document.querySelector('#locationStatus .info-value').textContent = 'Geolocation not supported';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                
+                try {
+                    const response = await fetch('php/get_settings.php');
+                    const result = await response.json();
+                    
+                    if (result.success && result.data.location && result.data.location.latitude) {
+                        const distance = calculateDistance(currentLocation.lat, currentLocation.lng, 
+                            parseFloat(result.data.location.latitude), parseFloat(result.data.location.longitude));
+                        isWithinLocation = distance <= result.data.location.radius;
+                        const statusSpan = document.querySelector('#locationStatus .info-value');
+                        if (isWithinLocation) {
+                            statusSpan.innerHTML = `<span style="color: #28a745;">✓ Within area (${distance.toFixed(0)}m)</span>`;
+                        } else {
+                            statusSpan.innerHTML = `<span style="color: #dc3545;">✗ Outside area (${distance.toFixed(0)}m)</span>`;
+                        }
+                    } else {
+                        document.querySelector('#locationStatus .info-value').innerHTML = '<span style="color: #ff9800;">⚠ Location not configured by admin</span>';
+                    }
+                } catch (error) {
+                    console.error('Error checking location:', error);
+                    document.querySelector('#locationStatus .info-value').innerHTML = '<span style="color: #dc3545;">⚠ Error connecting to server</span>';
+                }
+                updateSubmitButton();
+            }, () => {
+                document.querySelector('#locationStatus .info-value').textContent = 'Unable to get location';
+            });
+        }
+
+        async function checkTimeStatus() {
+            try {
+                const response = await fetch('php/get_settings.php');
+                const result = await response.json();
+                
+                if (result.success && result.data.time && result.data.time.timeInStart) {
+                    const now = new Date();
+                    const currentTime = now.toTimeString().slice(0, 5);
+                    const { timeInStart, timeInEnd, timeOutStart, timeOutEnd } = result.data.time;
+                    
+                    if (currentTime >= timeInStart && currentTime <= timeInEnd) {
+                        document.querySelector('#timeStatus .info-value').innerHTML = '<span style="color: #28a745;">✓ Time In Open</span>';
+                        isWithinTime = true;
+                    } else if (currentTime >= timeOutStart && currentTime <= timeOutEnd) {
+                        document.querySelector('#timeStatus .info-value').innerHTML = '<span style="color: #28a745;">✓ Time Out Open</span>';
+                        isWithinTime = true;
+                    } else {
+                        document.querySelector('#timeStatus .info-value').innerHTML = '<span style="color: #dc3545;">✗ Window Closed</span>';
+                        isWithinTime = false;
+                    }
+                } else {
+                    document.querySelector('#timeStatus .info-value').innerHTML = '<span style="color: #ff9800;">⚠ Time not configured</span>';
+                    isWithinTime = false;
+                }
+                updateSubmitButton();
+            } catch (error) {
+                console.error('Error checking time:', error);
+                document.querySelector('#timeStatus .info-value').innerHTML = '<span style="color: #dc3545;">⚠ Error checking time</span>';
+            }
+        }
+
+        async function checkTodayAttendance() {
+            const studentId = document.getElementById('studentId').value;
+            if (!studentId) return;
+            
+            try {
+                const response = await fetch(`php/check_attendance.php?studentId=${encodeURIComponent(studentId)}`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const statusSpan = document.querySelector('#attendanceStatus .info-value');
+                    if (result.data.hasTimeIn && !result.data.hasTimeOut) {
+                        statusSpan.innerHTML = '<span style="color: #ff9800;">⚠ Timed In - Waiting for Time Out</span>';
+                    } else if (result.data.hasTimeIn && result.data.hasTimeOut) {
+                        statusSpan.innerHTML = '<span style="color: #4caf50;">✓ Completed Today</span>';
+                        document.getElementById('submitBtn').disabled = true;
+                    } else {
+                        statusSpan.innerHTML = '<span style="color: #2196f3;">✓ Ready to Time In</span>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking attendance:', error);
+            }
+        }
+
+        function updateSubmitButton() {
+            const btn = document.getElementById('submitBtn');
+            if (isWithinLocation && isWithinTime && currentPhoto) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            }
+        }
+
+        // ============ ATTENDANCE SUBMISSION ============
+        document.getElementById('attendanceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            
+            const formData = new FormData();
+            formData.append('studentId', document.getElementById('studentId').value);
+            formData.append('studentName', document.getElementById('studentName').value);
+            formData.append('latitude', currentLocation.lat);
+            formData.append('longitude', currentLocation.lng);
+            formData.append('photo', currentPhoto);
+            
+            try {
+                const response = await fetch('php/submit_attendance.php', { method: 'POST', body: formData });
+                const result = await response.json();
+                
+                showAlert(result.message, result.success ? 'success' : 'error');
+                
+                if (result.success) {
+                    document.getElementById('attendanceForm').reset();
+                    currentPhoto = null;
+                    document.getElementById('photoPreview').style.display = 'none';
+                    document.getElementById('video').style.display = 'block';
+                    document.getElementById('captureBtn').style.display = 'block';
+                    initCamera();
+                }
+            } catch (error) {
+                showAlert('Error submitting attendance. Please check your connection.', 'error');
+            }
+            
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Submit Attendance';
+            btn.disabled = false;
+        });
+
+        // ============ ADMIN FUNCTIONS ============
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            try {
+                const response = await fetch('php/admin_login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    showAdminDashboard();
+                } else {
+                    showAlert(result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('Error connecting to server', 'error');
+            }
+        });
+
+        async function loadAdminDashboard() {
+            await loadSettings();
+            await loadStatistics();
+            await loadAttendanceRecords();
+            initAdminMap();
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await fetch('php/get_settings.php');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    if (result.data.location && result.data.location.latitude) {
+                        document.getElementById('adminRadius').value = result.data.location.radius;
+                        if (adminMap) {
+                            updateAdminMap(parseFloat(result.data.location.latitude), parseFloat(result.data.location.longitude));
+                        }
+                    }
+                    if (result.data.time) {
+                        document.getElementById('timeInStart').value = result.data.time.timeInStart || '';
+                        document.getElementById('timeInEnd').value = result.data.time.timeInEnd || '';
+                        document.getElementById('timeOutStart').value = result.data.time.timeOutStart || '';
+                        document.getElementById('timeOutEnd').value = result.data.time.timeOutEnd || '';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                const response = await fetch('php/get_dashboard_stats.php');
+                const result = await response.json();
+                if (result.success && result.data) {
+                    document.getElementById('statPresent').textContent = result.data.present || 0;
+                    document.getElementById('statLate').textContent = result.data.late || 0;
+                    document.getElementById('statAbsent').textContent = result.data.absent || 0;
+                    document.getElementById('statTotal').textContent = result.data.total || 0;
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        async function loadAttendanceRecords() {
+            const date = document.getElementById('filterDate').value || new Date().toISOString().split('T')[0];
+            const search = document.getElementById('searchStudent').value;
+            try {
+                const response = await fetch(`php/get_attendance.php?date=${date}&search=${encodeURIComponent(search)}`);
+                const result = await response.json();
+                
+                const tbody = document.getElementById('attendanceTableBody');
+                if (result.success && result.data.attendance && result.data.attendance.length > 0) {
+                    tbody.innerHTML = result.data.attendance.map(record => `
+                        <tr>
+                            <td>${record.type === 'time_in' ? record.time_in : (record.time_out || '-')}</td>
+                            <td>${record.student_id}</td>
+                            <td>${record.student_name}</td>
+                            <td>${record.type === 'time_in' ? 'Time In' : 'Time Out'}</td>
+                            <td><span style="color: ${record.status === 'present' ? '#28a745' : '#ff9800'}">${record.status}</span></td>
+                            <td>${record.photo_path ? `<img src="${record.photo_path}" class="photo-thumb" onclick="viewPhoto('${record.photo_path}')">` : '-'}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No records found</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading records:', error);
+            }
+        }
+
+        function initAdminMap() {
+            if (adminMap) return;
+            adminMap = L.map('adminMap').setView([14.5995, 120.9842], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(adminMap);
+            
+            adminMap.on('click', (e) => {
+                updateAdminMap(e.latlng.lat, e.latlng.lng);
+            });
+        }
+
+        function updateAdminMap(lat, lng) {
+            if (adminMarker) adminMarker.setLatLng([lat, lng]);
+            else adminMarker = L.marker([lat, lng]).addTo(adminMap);
+            
+            const radius = parseInt(document.getElementById('adminRadius').value);
+            if (adminCircle) adminCircle.setLatLng([lat, lng]).setRadius(radius);
+            else adminCircle = L.circle([lat, lng], { radius: radius, color: '#667eea', fillOpacity: 0.2 }).addTo(adminMap);
+            
+            adminMap.setView([lat, lng], 15);
+        }
+
+        function pinCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    updateAdminMap(position.coords.latitude, position.coords.longitude);
+                    showAlert('Location pinned!', 'success');
+                }, () => showAlert('Unable to get location', 'error'));
+            } else {
+                showAlert('Geolocation not supported', 'error');
+            }
+        }
+
+        async function saveLocation() {
+            if (!adminMarker) {
+                showAlert('Please pin a location first', 'error');
+                return;
+            }
+            const lat = adminMarker.getLatLng().lat;
+            const lng = adminMarker.getLatLng().lng;
+            const radius = document.getElementById('adminRadius').value;
+            
+            try {
+                const response = await fetch('php/save_location.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `latitude=${lat}&longitude=${lng}&radius=${radius}`
+                });
+                const result = await response.json();
+                showAlert(result.message, result.success ? 'success' : 'error');
+            } catch (error) {
+                showAlert('Error saving location', 'error');
+            }
+        }
+
+        async function saveTimeSettings() {
+            const timeInStart = document.getElementById('timeInStart').value;
+            const timeInEnd = document.getElementById('timeInEnd').value;
+            const timeOutStart = document.getElementById('timeOutStart').value;
+            const timeOutEnd = document.getElementById('timeOutEnd').value;
+            
+            if (!timeInStart || !timeInEnd || !timeOutStart || !timeOutEnd) {
+                showAlert('Please fill all time fields', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('php/save_time_settings.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `timeInStart=${timeInStart}&timeInEnd=${timeInEnd}&timeOutStart=${timeOutStart}&timeOutEnd=${timeOutEnd}`
+                });
+                const result = await response.json();
+                showAlert(result.message, result.success ? 'success' : 'error');
+            } catch (error) {
+                showAlert('Error saving time settings', 'error');
+            }
+        }
+
+        function exportReport() {
+            const table = document.getElementById('attendanceTable');
+            let csv = [];
+            const headers = [];
+            table.querySelectorAll('th').forEach(th => headers.push(th.textContent));
+            csv.push(headers.join(','));
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const rowData = [];
+                row.querySelectorAll('td').forEach((td, i) => {
+                    if (i !== 5) rowData.push(`"${td.textContent.replace(/"/g, '""')}"`);
+                });
+                csv.push(rowData.join(','));
+            });
+            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `attendance_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showAlert('Report exported!', 'success');
+        }
+
+        function viewPhoto(path) {
+            const modal = document.getElementById('photoModal');
+            document.getElementById('modalPhoto').src = path;
+            modal.style.display = 'block';
+            document.querySelector('.close').onclick = () => modal.style.display = 'none';
+        }
+
+        // Event Listeners
+        document.getElementById('studentId').addEventListener('change', checkTodayAttendance);
+        document.getElementById('captureBtn').addEventListener('click', capturePhoto);
+        document.getElementById('retakeBtn').addEventListener('click', retakePhoto);
+        document.getElementById('filterDate').addEventListener('change', loadAttendanceRecords);
+        document.getElementById('searchStudent').addEventListener('input', loadAttendanceRecords);
+
+        // Set default filter date to today
+        document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
+
+        // Check login status on load
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            showAdminDashboard();
+        } else {
+            showStudentView();
+        }
+
+        // Initialize
+        initCamera();
+        checkLocation();
+        checkTimeStatus();
+        setInterval(checkLocation, 30000);
+        setInterval(checkTimeStatus, 60000);
+
+        // Make functions global for HTML onclick
+        window.showAdminLogin = showAdminLogin;
+        window.showStudentView = showStudentView;
+        window.logoutAdmin = logoutAdmin;
+        window.saveLocation = saveLocation;
+        window.saveTimeSettings = saveTimeSettings;
+        window.pinCurrentLocation = pinCurrentLocation;
+        window.exportReport = exportReport;
+        window.viewPhoto = viewPhoto;
+    </script>
+</body>
+</html>

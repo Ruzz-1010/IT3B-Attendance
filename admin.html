@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Attendance System</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <div class="login-card">
+                <div class="login-header">
+                    <i class="fas fa-user-shield"></i>
+                    <h2>Admin Login</h2>
+                </div>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="login-btn">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" style="display: none;">
+            <nav class="admin-nav">
+                <div class="nav-brand">
+                    <i class="fas fa-chalkboard-user"></i>
+                    <h2>IT3B Attendance Admin</h2>
+                </div>
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </nav>
+
+            <div class="dashboard-content">
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-user-check"></i>
+                        <div>
+                            <h3 id="presentCount">0</h3>
+                            <p>Students Present</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h3 id="lateCount">0</h3>
+                            <p>Late Students</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-user-times"></i>
+                        <div>
+                            <h3 id="absentCount">0</h3>
+                            <p>Absent Students</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-calendar-check"></i>
+                        <div>
+                            <h3 id="totalToday">0</h3>
+                            <p>Attendance Today</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Settings -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <i class="fas fa-map-pin"></i>
+                        <h3>Location Settings</h3>
+                    </div>
+                    <div class="location-controls">
+                        <div id="map" class="map-container"></div>
+                        <div class="location-form">
+                            <button id="pinCurrentLocation" class="btn-primary">
+                                <i class="fas fa-crosshairs"></i>
+                                Pin Current Location
+                            </button>
+                            <div class="form-group">
+                                <label>Radius (meters)</label>
+                                <input type="number" id="radius" value="100" step="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Latitude</label>
+                                <input type="text" id="latitude" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Longitude</label>
+                                <input type="text" id="longitude" readonly>
+                            </div>
+                            <button id="saveLocationBtn" class="btn-success">
+                                <i class="fas fa-save"></i>
+                                Activate Location
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Settings -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <i class="fas fa-clock"></i>
+                        <h3>Time Settings</h3>
+                    </div>
+                    <div class="time-controls">
+                        <div class="form-group">
+                            <label>Time In Start</label>
+                            <input type="time" id="timeInStart">
+                        </div>
+                        <div class="form-group">
+                            <label>Time In End</label>
+                            <input type="time" id="timeInEnd">
+                        </div>
+                        <div class="form-group">
+                            <label>Time Out Start</label>
+                            <input type="time" id="timeOutStart">
+                        </div>
+                        <div class="form-group">
+                            <label>Time Out End</label>
+                            <input type="time" id="timeOutEnd">
+                        </div>
+                        <button id="saveTimeSettings" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Time Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Attendance Records -->
+                <div class="records-section">
+                    <div class="section-header">
+                        <i class="fas fa-table"></i>
+                        <h3>Attendance Records</h3>
+                        <div class="record-filters">
+                            <input type="date" id="filterDate">
+                            <input type="text" id="searchStudent" placeholder="Search student...">
+                            <button id="exportReport" class="btn-secondary">
+                                <i class="fas fa-download"></i>
+                                Export Report
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="attendanceTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Type</th>
+                                    <th>Time</th>
+                                    <th>Location</th>
+                                    <th>Photo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center">Loading records...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Photo View -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalPhoto" src="" alt="Attendance Photo">
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
