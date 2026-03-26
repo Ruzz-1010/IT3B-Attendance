@@ -11,6 +11,15 @@ $timeInEnd = sanitize($_POST['timeInEnd']);
 $timeOutStart = sanitize($_POST['timeOutStart']);
 $timeOutEnd = sanitize($_POST['timeOutEnd']);
 
+// Validate
+if (!$timeInStart || !$timeInEnd) {
+    jsonResponse(false, 'Please set Time In schedule');
+}
+
+if (!$timeOutStart || !$timeOutEnd) {
+    jsonResponse(false, 'Please set Time Out schedule');
+}
+
 // Update settings
 $sql = "UPDATE admin_settings 
         SET time_in_start = '$timeInStart', 

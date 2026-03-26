@@ -6,7 +6,6 @@
     <title>IT3B Attendance System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
             margin: 0;
@@ -21,12 +20,11 @@
             padding: 20px;
         }
 
-        .main-container {
-            max-width: 600px;
+        .container {
+            max-width: 500px;
             margin: 0 auto;
         }
 
-        /* Card Styles */
         .card {
             background: white;
             border-radius: 30px;
@@ -77,7 +75,6 @@
             font-size: 14px;
         }
 
-        /* Admin Toggle Button - ALWAYS VISIBLE */
         .admin-toggle-btn {
             position: absolute;
             top: 10px;
@@ -104,7 +101,6 @@
             transform: rotate(15deg);
         }
 
-        /* Form Styles */
         .form-group {
             margin-bottom: 20px;
         }
@@ -138,7 +134,6 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        /* Info Section */
         .info-section {
             background: #f8f9fa;
             border-radius: 15px;
@@ -176,7 +171,6 @@
             font-weight: 500;
         }
 
-        /* Camera Section */
         .camera-section {
             margin-bottom: 20px;
         }
@@ -235,8 +229,7 @@
             margin-bottom: 10px;
         }
 
-        /* Buttons */
-        .submit-btn, .login-btn, .save-btn {
+        .submit-btn {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -251,7 +244,7 @@
             margin-top: 10px;
         }
 
-        .submit-btn:hover:not(:disabled), .login-btn:hover, .save-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
@@ -261,24 +254,6 @@
             cursor: not-allowed;
         }
 
-        .logout-btn {
-            width: 100%;
-            padding: 12px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .logout-btn:hover {
-            background: #c82333;
-        }
-
-        /* Alert */
         .status-alert {
             background: #f8d7da;
             border-left: 4px solid #dc3545;
@@ -288,7 +263,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            animation: shake 0.5s ease;
         }
 
         .status-alert.success {
@@ -309,86 +283,6 @@
             font-size: 12px;
         }
 
-        /* Admin Dashboard Styles */
-        .admin-dashboard {
-            background: white;
-            border-radius: 30px;
-            padding: 25px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-        }
-
-        .stat-card i {
-            font-size: 32px;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .stat-card h3 {
-            font-size: 28px;
-            color: #333;
-            font-weight: 700;
-        }
-
-        .map-container {
-            height: 300px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            overflow: hidden;
-        }
-
-        .records-table {
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        th {
-            background: #f8f9fa;
-            font-weight: 600;
-        }
-
-        .photo-thumb {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
         .modal {
             display: none;
             position: fixed;
@@ -397,32 +291,54 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         .modal-content {
-            margin: auto;
-            display: block;
-            width: 80%;
-            max-width: 700px;
-            position: absolute;
+            background: white;
+            margin: 50px auto;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateY(-50%);
         }
 
-        .close {
+        .close-modal {
             position: absolute;
             top: 15px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .modal h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
         }
 
-        .text-center {
-            text-align: center;
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
         @media (max-width: 480px) {
@@ -430,259 +346,133 @@
                 padding: 10px;
             }
             
-            .card, .admin-dashboard {
+            .card {
                 padding: 20px;
             }
             
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .modal-content {
+                margin: 20px;
+                width: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <!-- Student View -->
-        <div id="studentView">
-            <div class="card">
-                <button class="admin-toggle-btn" onclick="showAdminLogin()">
-                    <i class="fas fa-user-shield"></i>
-                </button>
-                
-                <div class="header">
-                    <div class="logo">
-                        <i class="fas fa-graduation-cap"></i>
-                        <h1>IT3B Attendance</h1>
-                    </div>
-                    <p class="subtitle">Secure Location-Based Verification</p>
+    <div class="container">
+        <div class="card">
+            <button class="admin-toggle-btn" onclick="openAdminModal()">
+                <i class="fas fa-user-shield"></i>
+            </button>
+            
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h1>IT3B Attendance</h1>
                 </div>
-
-                <div id="statusAlert" class="status-alert" style="display: none;">
-                    <i class="fas fa-info-circle"></i>
-                    <span id="alertMessage"></span>
-                </div>
-
-                <form id="attendanceForm">
-                    <div class="form-group">
-                        <label for="studentId">
-                            <i class="fas fa-id-card"></i>
-                            STUDENT ID
-                        </label>
-                        <input type="text" id="studentId" required placeholder="Enter your student ID">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="studentName">
-                            <i class="fas fa-user"></i>
-                            FULL NAME
-                        </label>
-                        <input type="text" id="studentName" required placeholder="Enter your full name">
-                    </div>
-
-                    <div class="info-section">
-                        <div class="info-item" id="locationStatus">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div>
-                                <strong>LOCATION</strong>
-                                <span class="info-value">Checking...</span>
-                            </div>
-                        </div>
-                        <div class="info-item" id="timeStatus">
-                            <i class="fas fa-clock"></i>
-                            <div>
-                                <strong>TIME WINDOW</strong>
-                                <span class="info-value">Checking...</span>
-                            </div>
-                        </div>
-                        <div class="info-item" id="attendanceStatus">
-                            <i class="fas fa-calendar-check"></i>
-                            <div>
-                                <strong>TODAY'S STATUS</strong>
-                                <span class="info-value">Ready</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="camera-section">
-                        <label>
-                            <i class="fas fa-camera"></i>
-                            PHOTO VERIFICATION
-                        </label>
-                        <div class="camera-container">
-                            <video id="video" autoplay playsinline></video>
-                            <canvas id="canvas" style="display: none;"></canvas>
-                            <button type="button" id="captureBtn" class="capture-btn">
-                                <i class="fas fa-camera-retro"></i> Capture Photo
-                            </button>
-                        </div>
-                        <div id="photoPreview" class="photo-preview" style="display: none;">
-                            <img id="capturedPhoto" alt="Captured photo">
-                            <button type="button" id="retakeBtn" class="retake-btn">
-                                <i class="fas fa-redo-alt"></i> Retake
-                            </button>
-                        </div>
-                        <input type="hidden" id="photoData">
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="submit-btn" disabled>
-                        <i class="fas fa-check-circle"></i> Submit Attendance
-                    </button>
-                </form>
-
-                <div class="info-footer">
-                    <i class="fas fa-shield-alt"></i>
-                    <p>Secured with GPS, Time & Photo Verification</p>
-                </div>
+                <p class="subtitle">Secure Location-Based Verification</p>
             </div>
-        </div>
 
-        <!-- Admin Login View -->
-        <div id="adminLoginView" style="display: none;">
-            <div class="card">
-                <button class="admin-toggle-btn" onclick="showStudentView()">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                
-                <div class="header">
-                    <div class="logo">
-                        <i class="fas fa-user-shield"></i>
-                        <h1>Admin Login</h1>
-                    </div>
-                    <p class="subtitle">Access Administrator Dashboard</p>
-                </div>
-
-                <form id="adminLoginForm">
-                    <div class="form-group">
-                        <label><i class="fas fa-user"></i> Username</label>
-                        <input type="text" id="adminUsername" required placeholder="Enter username">
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-lock"></i> Password</label>
-                        <input type="password" id="adminPassword" required placeholder="Enter password">
-                    </div>
-                    <button type="submit" class="submit-btn">Login to Dashboard</button>
-                </form>
-                
-                <div class="info-footer">
-                    <i class="fas fa-info-circle"></i>
-                    <p>Default: admin / admin123</p>
-                </div>
+            <div id="statusAlert" class="status-alert" style="display: none;">
+                <i class="fas fa-info-circle"></i>
+                <span id="alertMessage"></span>
             </div>
-        </div>
 
-        <!-- Admin Dashboard View -->
-        <div id="adminDashboardView" style="display: none;">
-            <div class="admin-dashboard">
-                <div class="admin-header">
-                    <div class="logo" style="margin: 0;">
-                        <i class="fas fa-chalkboard-user"></i>
-                        <h2 style="font-size: 20px;">Admin Dashboard</h2>
-                    </div>
-                    <button onclick="logoutAdmin()" class="logout-btn" style="width: auto; padding: 8px 15px; margin: 0;">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
+            <form id="attendanceForm">
+                <div class="form-group">
+                    <label for="studentId">
+                        <i class="fas fa-id-card"></i>
+                        STUDENT ID
+                    </label>
+                    <input type="text" id="studentId" required placeholder="Enter your student ID">
                 </div>
 
-                <!-- Statistics -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class="fas fa-user-check"></i>
-                        <h3 id="statPresent">0</h3>
-                        <p>Present</p>
+                <div class="form-group">
+                    <label for="studentName">
+                        <i class="fas fa-user"></i>
+                        FULL NAME
+                    </label>
+                    <input type="text" id="studentName" required placeholder="Enter your full name">
+                </div>
+
+                <div class="info-section">
+                    <div class="info-item" id="locationStatus">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong>LOCATION</strong>
+                            <span class="info-value">Checking...</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="info-item" id="timeStatus">
                         <i class="fas fa-clock"></i>
-                        <h3 id="statLate">0</h3>
-                        <p>Late</p>
+                        <div>
+                            <strong>TIME WINDOW</strong>
+                            <span class="info-value">Checking...</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <i class="fas fa-user-times"></i>
-                        <h3 id="statAbsent">0</h3>
-                        <p>Absent</p>
-                    </div>
-                    <div class="stat-card">
+                    <div class="info-item" id="attendanceStatus">
                         <i class="fas fa-calendar-check"></i>
-                        <h3 id="statTotal">0</h3>
-                        <p>Total Today</p>
+                        <div>
+                            <strong>TODAY'S STATUS</strong>
+                            <span class="info-value">Ready</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Location Settings -->
-                <div style="margin-bottom: 20px;">
-                    <h3><i class="fas fa-map-pin"></i> Location Settings</h3>
-                    <div id="adminMap" class="map-container"></div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                        <input type="number" id="adminRadius" placeholder="Radius (meters)" value="100">
-                        <button onclick="saveLocation()" class="save-btn" style="margin: 0;">Save Location</button>
+                <div class="camera-section">
+                    <label>
+                        <i class="fas fa-camera"></i>
+                        PHOTO VERIFICATION
+                    </label>
+                    <div class="camera-container">
+                        <video id="video" autoplay playsinline></video>
+                        <canvas id="canvas" style="display: none;"></canvas>
+                        <button type="button" id="captureBtn" class="capture-btn">
+                            <i class="fas fa-camera-retro"></i> Capture Photo
+                        </button>
                     </div>
-                    <button onclick="pinCurrentLocation()" class="capture-btn" style="margin-top: 10px;">
-                        <i class="fas fa-crosshairs"></i> Pin My Current Location
-                    </button>
+                    <div id="photoPreview" class="photo-preview" style="display: none;">
+                        <img id="capturedPhoto" alt="Captured photo">
+                        <button type="button" id="retakeBtn" class="retake-btn">
+                            <i class="fas fa-redo-alt"></i> Retake
+                        </button>
+                    </div>
+                    <input type="hidden" id="photoData">
                 </div>
 
-                <!-- Time Settings -->
-                <div style="margin-bottom: 20px;">
-                    <h3><i class="fas fa-clock"></i> Time Settings</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div>
-                            <label>Time In Start</label>
-                            <input type="time" id="timeInStart">
-                        </div>
-                        <div>
-                            <label>Time In End</label>
-                            <input type="time" id="timeInEnd">
-                        </div>
-                        <div>
-                            <label>Time Out Start</label>
-                            <input type="time" id="timeOutStart">
-                        </div>
-                        <div>
-                            <label>Time Out End</label>
-                            <input type="time" id="timeOutEnd">
-                        </div>
-                    </div>
-                    <button onclick="saveTimeSettings()" class="save-btn" style="margin-top: 10px;">Save Time Settings</button>
-                </div>
+                <button type="submit" id="submitBtn" class="submit-btn" disabled>
+                    <i class="fas fa-check-circle"></i> Submit Attendance
+                </button>
+            </form>
 
-                <!-- Attendance Records -->
-                <div>
-                    <h3><i class="fas fa-table"></i> Attendance Records</h3>
-                    <div style="display: flex; gap: 10px; margin: 10px 0;">
-                        <input type="date" id="filterDate" style="flex: 1;">
-                        <input type="text" id="searchStudent" placeholder="Search..." style="flex: 2;">
-                        <button onclick="exportReport()" class="capture-btn" style="width: auto; margin: 0;">Export</button>
-                    </div>
-                    <div class="records-table">
-                        <table id="attendanceTable">
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
-                                    <th>Photo</th>
-                                </tr>
-                            </thead>
-                            <tbody id="attendanceTableBody">
-                                <tr><td colspan="6" class="text-center">Loading...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="info-footer">
+                <i class="fas fa-shield-alt"></i>
+                <p>Secured with GPS, Time & Photo Verification</p>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Photo View -->
-    <div id="photoModal" class="modal">
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <img id="modalPhoto" src="">
+            <span class="close-modal" onclick="closeAdminModal()">&times;</span>
+            <h2><i class="fas fa-user-shield"></i> Admin Login</h2>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="adminUsername" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPassword" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="login-btn">Login to Dashboard</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px; font-size: 12px; color: #999;">
+                Default: admin / admin123
+            </p>
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // Global Variables
         let currentLocation = null;
@@ -690,37 +480,24 @@
         let isWithinTime = false;
         let currentPhoto = null;
         let stream = null;
-        let adminMap = null;
-        let adminMarker = null;
-        let adminCircle = null;
 
-        // ============ VIEW SWITCHING ============
-        function showAdminLogin() {
-            document.getElementById('studentView').style.display = 'none';
-            document.getElementById('adminLoginView').style.display = 'block';
-            document.getElementById('adminDashboardView').style.display = 'none';
+        // Modal Functions
+        function openAdminModal() {
+            document.getElementById('adminModal').style.display = 'block';
         }
 
-        function showStudentView() {
-            document.getElementById('studentView').style.display = 'block';
-            document.getElementById('adminLoginView').style.display = 'none';
-            document.getElementById('adminDashboardView').style.display = 'none';
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
         }
 
-        function showAdminDashboard() {
-            document.getElementById('studentView').style.display = 'none';
-            document.getElementById('adminLoginView').style.display = 'none';
-            document.getElementById('adminDashboardView').style.display = 'block';
-            loadAdminDashboard();
+        window.onclick = function(event) {
+            const modal = document.getElementById('adminModal');
+            if (event.target === modal) {
+                closeAdminModal();
+            }
         }
 
-        function logoutAdmin() {
-            localStorage.removeItem('adminLoggedIn');
-            showStudentView();
-            showAlert('Logged out successfully', 'success');
-        }
-
-        // ============ ALERT FUNCTION ============
+        // Alert Function
         function showAlert(message, type) {
             const alertDiv = document.getElementById('statusAlert');
             const alertMessage = document.getElementById('alertMessage');
@@ -735,7 +512,7 @@
             }, 3000);
         }
 
-        // ============ CAMERA FUNCTIONS ============
+        // Camera Functions
         async function initCamera() {
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ 
@@ -779,7 +556,7 @@
             updateSubmitButton();
         }
 
-        // ============ LOCATION FUNCTIONS ============
+        // Location Functions
         function calculateDistance(lat1, lon1, lat2, lon2) {
             if (!lat2 || !lon2) return Infinity;
             const R = 6371e3;
@@ -816,7 +593,7 @@
                             statusSpan.innerHTML = `<span style="color: #dc3545;">✗ Outside area (${distance.toFixed(0)}m)</span>`;
                         }
                     } else {
-                        document.querySelector('#locationStatus .info-value').innerHTML = '<span style="color: #ff9800;">⚠ Location not configured by admin</span>';
+                        document.querySelector('#locationStatus .info-value').innerHTML = '<span style="color: #ff9800;">⚠ Location not configured</span>';
                     }
                 } catch (error) {
                     console.error('Error checking location:', error);
@@ -894,7 +671,7 @@
             }
         }
 
-        // ============ ATTENDANCE SUBMISSION ============
+        // Attendance Submission
         document.getElementById('attendanceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -923,18 +700,24 @@
                     initCamera();
                 }
             } catch (error) {
-                showAlert('Error submitting attendance. Please check your connection.', 'error');
+                showAlert('Error submitting attendance', 'error');
             }
             
             btn.innerHTML = '<i class="fas fa-check-circle"></i> Submit Attendance';
             btn.disabled = false;
         });
 
-        // ============ ADMIN FUNCTIONS ============
+        // Admin Login - FIXED
         document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const username = document.getElementById('adminUsername').value;
             const password = document.getElementById('adminPassword').value;
+            const loginBtn = document.querySelector('#adminLoginForm .login-btn');
+            const originalText = loginBtn.innerHTML;
+            
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            loginBtn.disabled = true;
             
             try {
                 const response = await fetch('php/admin_login.php', {
@@ -942,218 +725,41 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
                 });
+                
                 const result = await response.json();
                 
                 if (result.success) {
-                    localStorage.setItem('adminLoggedIn', 'true');
-                    showAdminDashboard();
+                    // Store login status
+                    localStorage.setItem('admin_logged_in', 'true');
+                    localStorage.setItem('admin_username', username);
+                    
+                    // Show success message
+                    showAlert('Login successful! Redirecting...', 'success');
+                    
+                    // Close modal
+                    closeAdminModal();
+                    
+                    // Redirect to admin dashboard
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 500);
                 } else {
                     showAlert(result.message, 'error');
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.disabled = false;
                 }
             } catch (error) {
+                console.error('Login error:', error);
                 showAlert('Error connecting to server', 'error');
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
             }
         });
-
-        async function loadAdminDashboard() {
-            await loadSettings();
-            await loadStatistics();
-            await loadAttendanceRecords();
-            initAdminMap();
-        }
-
-        async function loadSettings() {
-            try {
-                const response = await fetch('php/get_settings.php');
-                const result = await response.json();
-                
-                if (result.success && result.data) {
-                    if (result.data.location && result.data.location.latitude) {
-                        document.getElementById('adminRadius').value = result.data.location.radius;
-                        if (adminMap) {
-                            updateAdminMap(parseFloat(result.data.location.latitude), parseFloat(result.data.location.longitude));
-                        }
-                    }
-                    if (result.data.time) {
-                        document.getElementById('timeInStart').value = result.data.time.timeInStart || '';
-                        document.getElementById('timeInEnd').value = result.data.time.timeInEnd || '';
-                        document.getElementById('timeOutStart').value = result.data.time.timeOutStart || '';
-                        document.getElementById('timeOutEnd').value = result.data.time.timeOutEnd || '';
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading settings:', error);
-            }
-        }
-
-        async function loadStatistics() {
-            try {
-                const response = await fetch('php/get_dashboard_stats.php');
-                const result = await response.json();
-                if (result.success && result.data) {
-                    document.getElementById('statPresent').textContent = result.data.present || 0;
-                    document.getElementById('statLate').textContent = result.data.late || 0;
-                    document.getElementById('statAbsent').textContent = result.data.absent || 0;
-                    document.getElementById('statTotal').textContent = result.data.total || 0;
-                }
-            } catch (error) {
-                console.error('Error loading statistics:', error);
-            }
-        }
-
-        async function loadAttendanceRecords() {
-            const date = document.getElementById('filterDate').value || new Date().toISOString().split('T')[0];
-            const search = document.getElementById('searchStudent').value;
-            try {
-                const response = await fetch(`php/get_attendance.php?date=${date}&search=${encodeURIComponent(search)}`);
-                const result = await response.json();
-                
-                const tbody = document.getElementById('attendanceTableBody');
-                if (result.success && result.data.attendance && result.data.attendance.length > 0) {
-                    tbody.innerHTML = result.data.attendance.map(record => `
-                        <tr>
-                            <td>${record.type === 'time_in' ? record.time_in : (record.time_out || '-')}</td>
-                            <td>${record.student_id}</td>
-                            <td>${record.student_name}</td>
-                            <td>${record.type === 'time_in' ? 'Time In' : 'Time Out'}</td>
-                            <td><span style="color: ${record.status === 'present' ? '#28a745' : '#ff9800'}">${record.status}</span></td>
-                            <td>${record.photo_path ? `<img src="${record.photo_path}" class="photo-thumb" onclick="viewPhoto('${record.photo_path}')">` : '-'}</td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No records found</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error loading records:', error);
-            }
-        }
-
-        function initAdminMap() {
-            if (adminMap) return;
-            adminMap = L.map('adminMap').setView([14.5995, 120.9842], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(adminMap);
-            
-            adminMap.on('click', (e) => {
-                updateAdminMap(e.latlng.lat, e.latlng.lng);
-            });
-        }
-
-        function updateAdminMap(lat, lng) {
-            if (adminMarker) adminMarker.setLatLng([lat, lng]);
-            else adminMarker = L.marker([lat, lng]).addTo(adminMap);
-            
-            const radius = parseInt(document.getElementById('adminRadius').value);
-            if (adminCircle) adminCircle.setLatLng([lat, lng]).setRadius(radius);
-            else adminCircle = L.circle([lat, lng], { radius: radius, color: '#667eea', fillOpacity: 0.2 }).addTo(adminMap);
-            
-            adminMap.setView([lat, lng], 15);
-        }
-
-        function pinCurrentLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position) => {
-                    updateAdminMap(position.coords.latitude, position.coords.longitude);
-                    showAlert('Location pinned!', 'success');
-                }, () => showAlert('Unable to get location', 'error'));
-            } else {
-                showAlert('Geolocation not supported', 'error');
-            }
-        }
-
-        async function saveLocation() {
-            if (!adminMarker) {
-                showAlert('Please pin a location first', 'error');
-                return;
-            }
-            const lat = adminMarker.getLatLng().lat;
-            const lng = adminMarker.getLatLng().lng;
-            const radius = document.getElementById('adminRadius').value;
-            
-            try {
-                const response = await fetch('php/save_location.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `latitude=${lat}&longitude=${lng}&radius=${radius}`
-                });
-                const result = await response.json();
-                showAlert(result.message, result.success ? 'success' : 'error');
-            } catch (error) {
-                showAlert('Error saving location', 'error');
-            }
-        }
-
-        async function saveTimeSettings() {
-            const timeInStart = document.getElementById('timeInStart').value;
-            const timeInEnd = document.getElementById('timeInEnd').value;
-            const timeOutStart = document.getElementById('timeOutStart').value;
-            const timeOutEnd = document.getElementById('timeOutEnd').value;
-            
-            if (!timeInStart || !timeInEnd || !timeOutStart || !timeOutEnd) {
-                showAlert('Please fill all time fields', 'error');
-                return;
-            }
-            
-            try {
-                const response = await fetch('php/save_time_settings.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `timeInStart=${timeInStart}&timeInEnd=${timeInEnd}&timeOutStart=${timeOutStart}&timeOutEnd=${timeOutEnd}`
-                });
-                const result = await response.json();
-                showAlert(result.message, result.success ? 'success' : 'error');
-            } catch (error) {
-                showAlert('Error saving time settings', 'error');
-            }
-        }
-
-        function exportReport() {
-            const table = document.getElementById('attendanceTable');
-            let csv = [];
-            const headers = [];
-            table.querySelectorAll('th').forEach(th => headers.push(th.textContent));
-            csv.push(headers.join(','));
-            table.querySelectorAll('tbody tr').forEach(row => {
-                const rowData = [];
-                row.querySelectorAll('td').forEach((td, i) => {
-                    if (i !== 5) rowData.push(`"${td.textContent.replace(/"/g, '""')}"`);
-                });
-                csv.push(rowData.join(','));
-            });
-            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `attendance_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showAlert('Report exported!', 'success');
-        }
-
-        function viewPhoto(path) {
-            const modal = document.getElementById('photoModal');
-            document.getElementById('modalPhoto').src = path;
-            modal.style.display = 'block';
-            document.querySelector('.close').onclick = () => modal.style.display = 'none';
-        }
 
         // Event Listeners
         document.getElementById('studentId').addEventListener('change', checkTodayAttendance);
         document.getElementById('captureBtn').addEventListener('click', capturePhoto);
         document.getElementById('retakeBtn').addEventListener('click', retakePhoto);
-        document.getElementById('filterDate').addEventListener('change', loadAttendanceRecords);
-        document.getElementById('searchStudent').addEventListener('input', loadAttendanceRecords);
-
-        // Set default filter date to today
-        document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
-
-        // Check login status on load
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
-            showAdminDashboard();
-        } else {
-            showStudentView();
-        }
 
         // Initialize
         initCamera();
@@ -1161,16 +767,6 @@
         checkTimeStatus();
         setInterval(checkLocation, 30000);
         setInterval(checkTimeStatus, 60000);
-
-        // Make functions global for HTML onclick
-        window.showAdminLogin = showAdminLogin;
-        window.showStudentView = showStudentView;
-        window.logoutAdmin = logoutAdmin;
-        window.saveLocation = saveLocation;
-        window.saveTimeSettings = saveTimeSettings;
-        window.pinCurrentLocation = pinCurrentLocation;
-        window.exportReport = exportReport;
-        window.viewPhoto = viewPhoto;
     </script>
 </body>
 </html>
