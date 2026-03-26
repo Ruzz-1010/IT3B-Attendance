@@ -17,7 +17,7 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
 define('DB_HOST', getenv('DB_HOST') ?: 'mysql.railway.internal');
 define('DB_USER', getenv('DB_USER') ?: 'root');
 define('DB_PASS', getenv('DB_PASS') ?: 'mrbKrRqbKrgVqZQoiQgqAvwnJOLhhtIf');
-define('DB_NAME', getenv('DB_NAME') ?: 'attendance_system');
+define('DB_NAME', getenv('DB_NAME') ?: 'railway');
 
 // Create connection with error handling
 try {
