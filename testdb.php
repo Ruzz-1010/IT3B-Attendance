@@ -1,11 +1,11 @@
 <?php
 
 $conn = new mysqli(
-getenv('MYSQLHOST'),
-getenv('MYSQLUSER'),
-getenv('MYSQLPASSWORD'),
-getenv('MYSQLDATABASE'),
-getenv('MYSQLPORT')
+getenv('mysql.railway.internal'),
+getenv('root'),
+getenv('mrbKrRqbKrgVqZQoiQgqAvwnJOLhhtIf'),
+getenv('railway'),
+getenv('3306')
 );
 
 if ($conn->connect_error) {
